@@ -20,8 +20,8 @@ jobs:
 
   git-sync:
     timeout-minutes: 30
-    # runs-on: [self-hosted]
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       # max-parallel: 2
       matrix:
