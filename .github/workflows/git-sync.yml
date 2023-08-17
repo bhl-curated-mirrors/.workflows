@@ -52,6 +52,8 @@ jobs:
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-lmp.git
         - src: https://git.yoctoproject.org/meta-lts-mixins
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-lts-mixins.git
+        - src: https://git.yoctoproject.org/meta-mingw
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-mingw.git
         - src: https://git.openembedded.org/meta-openembedded
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-openembedded.git
         - src: https://code.qt.io/yocto/meta-qt6.git
