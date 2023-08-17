@@ -88,7 +88,7 @@ jobs:
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/poky.git
     steps:
     - name: sync-refs
-      uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+      uses: wei/git-sync@v3
       with:
         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
         source_repo: ${{ matrix.src }}
@@ -96,7 +96,7 @@ jobs:
         destination_repo: ${{ matrix.dst }}
         destination_branch: "refs/heads/*"
     - name: sync-tags
-      uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+      uses: wei/git-sync@v3
       with:
         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
         source_repo: ${{ matrix.src }}
@@ -118,7 +118,7 @@ jobs:
   #         dst: git@github.com:$GITHUB_REPOSITORY_OWNER/linux-tegra-5.10.git
   #   steps:
   #   - name: sync-refs
-  #     uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+  #     uses: wei/git-sync@v3
   #     with:
   #       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
   #       source_repo: ${{ matrix.src }}
@@ -126,7 +126,7 @@ jobs:
   #       destination_repo: ${{ matrix.dst }}
   #       destination_branch: "refs/heads/*"
   #   - name: sync-tags
-  #     uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+  #     uses: wei/git-sync@v3
   #     with:
   #       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
   #       source_repo: ${{ matrix.src }}
