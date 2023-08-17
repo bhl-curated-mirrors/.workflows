@@ -56,6 +56,8 @@ jobs:
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-mingw.git
         - src: https://git.openembedded.org/meta-openembedded
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-openembedded.git
+        - src: https://git.openembedded.org/meta-python2
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-python2.git
         - src: https://code.qt.io/yocto/meta-qt6.git
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-qt6.git
         - src: https://github.com/agherzan/meta-raspberrypi.git
