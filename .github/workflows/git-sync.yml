@@ -1,0 +1,135 @@
+# .github/workflows/git-sync.yml
+# secrets.SSH_PRIVATE_KEY is associated to the public key of a member account for push
+
+name: Git Sync From Mirrors
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+  schedule:
+  # At 03:30 AM, only on Saturday
+  - cron: "30 3 * * 6"
+
+# concurrency:
+#   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+#   cancel-in-progress: true
+
+jobs:
+
+  git-sync:
+    timeout-minutes: 30
+    # runs-on: [self-hosted]
+    runs-on: ubuntu-latest
+    strategy:
+      # max-parallel: 2
+      matrix:
+        include:
+        - src: https://git.openembedded.org/bitbake
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/bitbake.git
+        - src: https://src.libcode.org/pkun/faux.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/faux.git
+        - src: https://src.libcode.org/pkun/klish
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/klish.git
+        - src: https://github.com/foundriesio/lmp-manifest.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/lmp-manifest.git
+        - src: https://github.com/foundriesio/lmp-tools.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/lmp-tools.git
+        - src: https://git.yoctoproject.org/meta-arm
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-arm.git
+        - src: https://github.com/kraj/meta-clang.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-clang.git
+        - src: https://git.yoctoproject.org/meta-cloud-services
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-cloud-services.git
+        - src: https://github.com/Freescale/meta-freescale.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-freescale.git
+        - src: https://github.com/Freescale/meta-freescale-3rdparty.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-freescale-3rdparty.git
+        - src: https://git.yoctoproject.org/meta-intel
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-intel.git
+        - src: https://github.com/foundriesio/meta-lmp.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-lmp.git
+        - src: https://git.yoctoproject.org/meta-lts-mixins
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-lts-mixins.git
+        - src: https://git.openembedded.org/meta-openembedded
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-openembedded.git
+        - src: https://code.qt.io/yocto/meta-qt6.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-qt6.git
+        - src: https://github.com/agherzan/meta-raspberrypi.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-raspberrypi.git
+        - src: https://github.com/Wind-River/meta-secure-core.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-secure-core.git
+        - src: https://git.yoctoproject.org/meta-security
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-security.git
+        - src: https://git.yoctoproject.org/meta-selinux
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-selinux.git
+        - src: https://github.com/STMicroelectronics/meta-st-stm32mp.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-st-stm32mp.git
+        - src: https://github.com/linux-sunxi/meta-sunxi.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-sunxi.git
+        - src: https://github.com/OE4T/meta-tegra.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-tegra.git
+        - src: https://git.yoctoproject.org/meta-ti
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-ti.git
+        - src: https://github.com/uptane/meta-updater.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-updater.git
+        - src: https://git.yoctoproject.org/meta-virtualization
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-virtualization.git
+        - src: https://github.com/foundriesio/meta-xilinx-tools.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-xilinx-tools.git
+        - src: https://github.com/foundriesio/meta-xilinx.git
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-xilinx.git
+        - src: https://git.yoctoproject.org/meta-yocto
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-yocto.git
+        - src: https://git.openembedded.org/openembedded-core
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/openembedded-core.git
+        - src: https://git.yoctoproject.org/poky
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/poky.git
+    steps:
+    - name: sync-refs
+      uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+      with:
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source_repo: ${{ matrix.src }}
+        source_branch: "refs/remotes/source/*"
+        destination_repo: ${{ matrix.dst }}
+        destination_branch: "refs/heads/*"
+    - name: sync-tags
+      uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+      with:
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source_repo: ${{ matrix.src }}
+        source_branch: "refs/tags/*"
+        destination_repo: ${{ matrix.dst }}
+        destination_branch: "refs/tags/*"
+
+  # git-sync-long:
+  #   timeout-minutes: 120
+  #   runs-on: [self-hosted]
+  #   # runs-on: ubuntu-latest
+  #   strategy:
+  #     # max-parallel: 2
+  #     matrix:
+  #       include:
+  #       - src: https://github.com/OE4T/linux-tegra-4.9.git
+  #         dst: git@github.com:$GITHUB_REPOSITORY_OWNER/linux-tegra-4.9.git
+  #       - src: https://github.com/OE4T/linux-tegra-5.10.git
+  #         dst: git@github.com:$GITHUB_REPOSITORY_OWNER/linux-tegra-5.10.git
+  #   steps:
+  #   - name: sync-refs
+  #     uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+  #     with:
+  #       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #       source_repo: ${{ matrix.src }}
+  #       source_branch: "refs/remotes/source/*"
+  #       destination_repo: ${{ matrix.dst }}
+  #       destination_branch: "refs/heads/*"
+  #   - name: sync-tags
+  #     uses: $GITHUB_REPOSITORY_OWNER/git-sync@v3
+  #     with:
+  #       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #       source_repo: ${{ matrix.src }}
+  #       source_branch: "refs/tags/*"
+  #       destination_repo: ${{ matrix.dst }}
+  #       destination_branch: "refs/tags/*"
