@@ -9,12 +9,11 @@ on:
     branches:
     - main
   schedule:
-  # At 03:30 AM, only on Saturday
-  - cron: "30 3 * * 6"
+  - cron: "30 3 * * *"
 
-# concurrency:
-#   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
 
@@ -23,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
-      # max-parallel: 2
+      max-parallel: 4
       matrix:
         include:
         - src: https://git.openembedded.org/bitbake
@@ -46,6 +45,8 @@ jobs:
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-freescale.git
         - src: https://github.com/Freescale/meta-freescale-3rdparty.git
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-freescale-3rdparty.git
+        - src: https://git.yoctoproject.org/git/meta-gplv2
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-gplv2.git
         - src: https://git.yoctoproject.org/meta-intel
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-intel.git
         - src: https://github.com/foundriesio/meta-lmp.git
@@ -117,33 +118,3 @@ jobs:
     steps:
     - name: Generate log notice
       run: echo "::notice file={name},line={line},endLine={endLine},title={title}::{message}"
-
-  # git-sync-long:
-  #   timeout-minutes: 120
-  #   runs-on: [self-hosted]
-  #   # runs-on: ubuntu-latest
-  #   strategy:
-  #     # max-parallel: 2
-  #     matrix:
-  #       include:
-  #       - src: https://github.com/OE4T/linux-tegra-4.9.git
-  #         dst: git@github.com:$GITHUB_REPOSITORY_OWNER/linux-tegra-4.9.git
-  #       - src: https://github.com/OE4T/linux-tegra-5.10.git
-  #         dst: git@github.com:$GITHUB_REPOSITORY_OWNER/linux-tegra-5.10.git
-  #   steps:
-  #   - name: sync-refs
-  #     uses: wei/git-sync@v3
-  #     with:
-  #       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #       source_repo: ${{ matrix.src }}
-  #       source_branch: "refs/remotes/source/*"
-  #       destination_repo: ${{ matrix.dst }}
-  #       destination_branch: "refs/heads/*"
-  #   - name: sync-tags
-  #     uses: wei/git-sync@v3
-  #     with:
-  #       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #       source_repo: ${{ matrix.src }}
-  #       source_branch: "refs/tags/*"
-  #       destination_repo: ${{ matrix.dst }}
-  #       destination_branch: "refs/tags/*"
