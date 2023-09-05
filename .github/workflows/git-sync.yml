@@ -93,6 +93,8 @@ jobs:
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/openembedded-core.git
         - src: https://git.yoctoproject.org/poky
           dst: git@github.com:$GITHUB_REPOSITORY_OWNER/poky.git
+        - src: https://git.yoctoproject.org/meta-tensorflow
+          dst: git@github.com:$GITHUB_REPOSITORY_OWNER/meta-tensorflow.git
     steps:
     - name: sync-refs
       uses: wei/git-sync@v3
